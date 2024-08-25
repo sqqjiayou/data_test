@@ -2,41 +2,41 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 读取Excel文件为DataFrame
+# Read the Excel file into a DataFrame
 df = pd.read_excel('your_file.xlsx')
 
-# 将createDate列转换为日期格式，并提取月份
+# Convert createDate column to datetime format and extract the month
 df['createDate'] = pd.to_datetime(df['createDate'])
 df['month'] = df['createDate'].dt.month
 
-# 过滤只包含5月到7月的数据
+# Filter data to include only May to July
 df_filtered = df[df['month'].isin([5, 6, 7])]
 
-# 按关键词和月份分组并计数
+# Group by keyword and month, then count occurrences
 grouped = df_filtered.groupby(['keyword', 'month']).size().unstack(fill_value=0)
 
-# 计算百分比
+# Calculate percentages
 percentages = grouped.div(grouped.sum(axis=0), axis=1) * 100
 
-# 创建柱状图
+# Create the bar plot
 plt.figure(figsize=(12, 8))
 sns.set_style("whitegrid")
 colors = sns.color_palette("Set2", 3)
 
-bar_plot = grouped.plot(kind='bar', stacked=False, color=colors, figsize=(12, 8))
+bar_plot = grouped.plot(kind='bar', stacked=False, color=colors, figsize=(12, 8), width=0.8)
 plt.title('Keyword Distribution by Month (May to July)', fontsize=16)
 plt.xlabel('Keywords', fontsize=14)
 plt.ylabel('Count', fontsize=14)
-plt.xticks(rotation=45, fontsize=12)
+plt.xticks(rotation=90, fontsize=12, ha='center')
 plt.yticks(fontsize=12)
 plt.legend(['May', 'June', 'July'], title='Month', fontsize=12)
 
-# 在每根bar上添加百分比标签
+# Add percentage labels on each bar
 for i, keyword in enumerate(grouped.index):
     for j, count in enumerate(grouped.loc[keyword]):
         if count > 0:
             plt.text(i + j * 0.25, count + 0.5, f'{percentages.loc[keyword, j+5]:.1f}%', 
-                     ha='center', va='bottom', fontsize=10, color='black')
+                     ha='center', va='bottom', fontsize=8, color='black')
 
 plt.tight_layout()
 plt.show()
