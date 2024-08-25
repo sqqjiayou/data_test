@@ -18,6 +18,9 @@ grouped = df_filtered.groupby(['keyword', 'month']).size().unstack(fill_value=0)
 # Calculate percentages
 percentages = grouped.div(grouped.sum(axis=0), axis=1) * 100
 
+# Sort keywords based on the specified rules
+grouped = grouped.sort_index(key=lambda x: x.map(lambda s: (s.startswith('R:'), s.startswith('topic:'), s)))
+
 # Create the bar plot
 plt.figure(figsize=(12, 8))
 sns.set_style("whitegrid")
@@ -35,8 +38,9 @@ plt.legend(['May', 'June', 'July'], title='Month', fontsize=12)
 for i, keyword in enumerate(grouped.index):
     for j, count in enumerate(grouped.loc[keyword]):
         if count > 0:
+            alignment = {0: 'left', 1: 'center', 2: 'right'}
             plt.text(i + j * 0.25, count + 0.5, f'{percentages.loc[keyword, j+5]:.1f}%', 
-                     ha='center', va='bottom', fontsize=8, color='black')
+                     ha=alignment[j], va='bottom', fontsize=8, color='black')
 
 plt.tight_layout()
 plt.show()
