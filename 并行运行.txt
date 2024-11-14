@@ -1,0 +1,1 @@
+https://huggingface.co/sentence-transformers/paraphrase-MiniLM-L6-v2
